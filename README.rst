@@ -1,6 +1,6 @@
-====================
+========================
 Shoestring Setup Utility
-====================
+========================
 
 
 .. image:: https://img.shields.io/pypi/v/shoestring_setup.svg

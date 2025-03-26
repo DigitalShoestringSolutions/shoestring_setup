@@ -92,6 +92,8 @@ dist: clean ## builds source and wheel package
 
 devenv: clean
 	python3 -m venv .
+
+dev-reqs:
 	pip install -r requirements_dev.txt
 
 dev: clean
