@@ -1,7 +1,7 @@
 from . import display
 import urllib.error
 from pathlib import Path
-
+import os
 
 from . import operations as ops
 
@@ -13,7 +13,7 @@ class Docker:
         self.force = force
 
     def install(self):
-        display.print_log("Installing Docker...")
+        display.print_header("Installing Docker...")
         existing_version = self.get_version()
 
         if existing_version:
@@ -29,7 +29,7 @@ class Docker:
             )
 
     def update(self):
-        display.print_log("Updating Docker...")
+        display.print_header("Updating Docker...")
 
         if self.os_env["os_id"] in ["debian", "ubuntu"]:
             self.update_via_apt()
@@ -57,7 +57,7 @@ class Docker:
 
         # for install
         ops.subprocess_exec(
-            "Install docker",
+            "Installed docker",
             [
                 "apt-get",
                 "install",
@@ -71,15 +71,20 @@ class Docker:
         )
 
         ops.subprocess_exec(
-            "Create docker permissions group", ["groupadd", "docker", "-f"]
+            "Created docker permissions group", ["groupadd", "docker", "-f"]
         )
+
         ops.subprocess_exec(
             "Let the user account run Docker without elevated privileges by adding user to permissions group",
             "usermod -a -G docker $SUDO_USER",
         )
-        # ops.subprocess_exec(None,["newgrp","docker"])
+
+        sudo_user = os.getenv("SUDO_USER")
+        if sudo_user == "":
+            display.print_error("Unable to get user, run 'sudo usermod -a -G docker $USER' once this setup has completed to fix this.")
+
         ops.subprocess_exec(
-            "Start Docker in the background", ["systemctl", "start", "docker"]
+            "Started Docker in the background", ["systemctl", "start", "docker"]
         )
         ops.subprocess_exec(
             "Set Docker to run in the background whenever the system boots up",
@@ -96,7 +101,7 @@ class Docker:
 
     def update_via_apt(self):
         ops.subprocess_exec(
-            "Update docker",
+            "Updated docker",
             [
                 "apt-get",
                 "install",
@@ -111,7 +116,7 @@ class Docker:
 
         installed_version = self.get_version()
         if installed_version:
-            display.print_complete(f"Complete: {installed_version}")
+            display.print_complete(f"Update Complete: {installed_version}")
         else:
             display.print_error(f"Docker update failed!")
 

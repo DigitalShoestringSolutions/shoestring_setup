@@ -1,14 +1,18 @@
 from . import display
 import platform
 
-from .docker import Docker
-from .rsyslog import Rsyslog
-from .logrotate import LogRotate
+from shoestring_setup.docker import Docker
+from shoestring_setup.shoestring_assembler import Assembler
+from shoestring_setup.apt_deps import InstallAptDependencies
 
 def install(update, force):
 
     os_env = detect_os_env()
-    dependency_classes = {"docker":Docker, "rsyslog":Rsyslog, "logrotate":LogRotate}
+    dependency_classes = {
+        "apt": InstallAptDependencies,
+        "docker": Docker,
+        "assembler": Assembler,
+    }
     dependency_instances = [
         dependency_cls(os_env, force) for dependency_cls in dependency_classes.values()
     ]

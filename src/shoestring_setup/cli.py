@@ -32,6 +32,7 @@ def main(
         display.print_top_header("Installing Dependencies")
         shoestring_setup.install(update, force)
         display.print_top_header("Finished")
+        display.print_notification("Please restart to complete setup")
 
 
 def app():
