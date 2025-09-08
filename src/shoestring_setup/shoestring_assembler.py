@@ -43,16 +43,25 @@ class Assembler:
             user_home = Path(user_home_raw)
 
             # Add desktop shortcut to app
+            logo_dest_path = user_home / "./.local/share/shoestring/shoestring_logo.png"
             desktop_shortcut = f"""
                 [Desktop Entry]
                 Name=Shoestring
                 Exec={str(user_home / ".local/bin/shoestring")} app
                 Comment=shoestring assembler
+                Icon={str(logo_dest_path)}
                 Type=Application
                 Terminal=true
                 Encoding=UTF-8
                 Categories=Development;
             """.strip()
+
+            import importlib.resources
+
+            logo_src_path = (
+                importlib.resources.files("shoestring_setup.assets")
+                / "shoestring_logo.png"
+            )
 
             result = ops.logged_subprocess_run(
                 ["sudo", "-u", sudo_user, "xdg-user-dir", "DESKTOP"]
@@ -66,11 +75,30 @@ class Assembler:
                 content=desktop_shortcut,
             )  # file permissions should be 644 if needed
 
+            ops.logged_file_write(
+                logo_dest_path, mode="wb", content=logo_src_path.read_bytes()
+            )
+
             # suppress "execute in shell" pop-up when using shortcut on Pi
-            libfm_conf = user_home / ".config/libfm/libfm.conf"
+            libfm_conf = Path("/etc/xdg/libfm/libfm.conf")
             if libfm_conf.exists():
                 ops.logged_subprocess_run(
-                    ["sed", "-i", "s/^quick_exec=0/quick_exec=1/", f"{str(libfm_conf)}"]
+                    [
+                        "grep",
+                        "-q",
+                        "^quick_exec[[:space:]]*=[[:space:]]*.[[:space:]]*$",
+                        f"{str(libfm_conf)}",
+                        "&&",
+                        "sed",
+                        "-i",
+                        "s/^quick_exec[\ tab]*=[\ tab]*0[\ tab]*/quick_exec=1/",
+                        f"{str(libfm_conf)}",
+                        "||",
+                        "sed",
+                        "-i",
+                        "'/^\[config\]/ a\quick_exec=1'",
+                        f"{str(libfm_conf)}",
+                    ]
                 )
 
             display.print_complete("Created desktop shortcut")
