@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "shoestring_setup"
-version = "0.1.0"
+version = "0.2.9"
 description = "Installs dependencies needed to run shoestring solutions"
 readme = "README.rst"
 authors = [
@@ -29,7 +29,7 @@ classifiers = [
 ]
 
 dependencies = [
-  "typer==0.15.2",
+  "typer==0.19.2",
 ]
 
 [project.optional-dependencies]

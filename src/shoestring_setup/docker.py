@@ -21,21 +21,21 @@ class Docker:
             if not self.force:
                 return
 
-        if self.os_env["os_id"] in ["debian", "ubuntu"]:
+        if self.os_env["os_id"] in ["debian", "raspbian", "ubuntu"]:
             self.install_via_apt()
         else:
             display.print_error(
-                f"This operating configuration isn't currenly supported. Please contact the Shoestring team for support and provide them with these details:\n{self.os_env}"
+                f"This operating system configuration isn't currenly supported. Please contact the Shoestring team for support and provide them with these details:\n{self.os_env}"
             )
 
     def update(self):
         display.print_header("Updating Docker...")
 
-        if self.os_env["os_id"] in ["debian", "ubuntu"]:
+        if self.os_env["os_id"] in ["debian", "raspbian", "ubuntu"]:
             self.update_via_apt()
         else:
             display.print_error(
-                f"This operating configuration isn't currenly supported. Please contact the Shoestring team for support and provide them with these details:\n{self.os_env}"
+                f"This operating system configuration isn't currenly supported. Please contact the Shoestring team for support and provide them with these details:\n{self.os_env}"
             )
 
     def get_version(self):
@@ -130,7 +130,7 @@ class Docker:
 
         display.print_log("Setting up docker apt source...")
 
-        ops.subprocess_exec("Update apt index", ["apt-get", "update"])
+        ops.subprocess_exec("Update apt index", ["apt-get","-qq", "update"])
         ops.subprocess_exec(
             "Ensure https certificates are installed and up-to-date",
             ["apt-get", "install", "ca-certificates"],
